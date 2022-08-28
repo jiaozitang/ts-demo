@@ -1,24 +1,53 @@
-// 条件：extends ? :
-// 如果 T 是 2 的子类型，那么类型是 true，否则类型是 false。
+// 1. 条件：extends ? :
+// 类型编程的条件运算和 js 相似，都是如果满足条件则返回a否则返回b
 type isTwo<T> = T extends 2 ? true : false;
 // false
 type res = isTwo<1>;
 
-// 推导：infer
-// 提取元组类型的第一个元素：
-// extends 约束类型参数只能是数组类型，因为不知道数组元素的具体类型，所以用 unknown。
-// extends 判断类型参数 T 是不是 [infer F, ...infer R] 的子类型，如果是就返回 F 变量，如果不是就不返回
+// 2. 约束 extends 
+// 通过约束语法 extends 限制类型。
+interface Length {
+    length: number
+}
+function fn1<T extends Length>(arg: T): number{
+    return arg.length
+}
+
+// 3. 推导：infer
+// 推导则是类似 js 的正则匹配，都满足公式条件时，可以提取公式中的变量，直接返回或者再次加工都可以。
 type First<T extends unknown[]> = T extends [infer F, ...infer R] ? F : never;
 // 1
 type res2 = First<[1, 2, 3]>;
 
-// 联合：｜
+// 4. 联合：｜
 // 代表类型可以是几个类型之一。
 type Union = 1 | 2 | 3;
 
-// 交叉：&代表对类型做合并。
+// 5. 交叉：&代表对类型做合并。
 type ObjType = { a: number } & { c: boolean };
 
+// 6. keyof 用于获取某种类型的所有键，其返回值是联合类型。
+const a: keyof {
+    name: string,
+    age: number
+} = 'name'
+
+// 7. T[K] 用于访问索引，得到索引对应的值的联合类型。
+interface I3 {
+  name: string,
+  age: number
+}
+
+// 8.in 用于遍历联合类型。
+const obj = {
+    name: 'tj',
+    age: 11
+}
+type T5 = {
+    [P in keyof typeof obj]: any
+}
+// 9. 索引重映射： as
+// as 用于修改映射类型的 key。
 // 映射类型
 type MapType<T> = {
     [
